@@ -1,40 +1,82 @@
 /* ============================================================
-   liquid-glass-kit materials
-   Technique: jh3y's liquid glass (codepen.io/jh3y/pen/EajLxJV)
+   liquid-glass-kit materials & controls
+   Technique: jh3y's liquid glass collection
+   (codepen.io/jh3y — EajLxJV refraction, qEbYRVg liquid slider)
 
    Dark mode: activated by a `.dark` ancestor class (Tailwind
-   convention) or `[data-theme="dark"]` ancestor.
-
-   Theming hooks (override on :root or any container):
-     --lg-frost        frost opacity for .liquid-glass (set by component prop)
-     --lg-ring         inset highlight ring color
-     --lg-glow         inner glow color
-     --lg-shadow       drop shadow color
-     --lg-chip-bg      .glass-chip background
-     --lg-sheet-bg     .glass-sheet background
+   convention) or `[data-theme="dark"]`. Apps with an "auto"
+   theme can re-declare the tokens inside their own
+   prefers-color-scheme media block — app token definitions
+   always win over these defaults.
    ============================================================ */
+
+/* ---------- design tokens (override per app) ---------- */
+:root {
+  /* glass material */
+  --lg-frost: rgba(255, 255, 255, 0.38);
+  --lg-frost-strong: rgba(255, 255, 255, 0.55);
+  --lg-edge: rgba(0, 0, 0, 0.12);
+  --lg-glow: rgba(0, 0, 0, 0.05);
+  --lg-press: rgba(255, 255, 255, 0.62);
+  --lg-shadow: rgba(17, 17, 26, 0.05);
+  --lg-sheet-bg: rgba(255, 255, 255, 0.84);
+
+  /* text / structure (iOS semantic defaults) */
+  --lg-label: #000000;
+  --lg-label2: rgba(60, 60, 67, 0.6);
+  --lg-separator: rgba(60, 60, 67, 0.18);
+  --lg-bg: #ffffff;
+  --lg-tint: #007aff;
+
+  /* controls */
+  --lg-segment: #ffffff;
+  --lg-track: rgba(120, 120, 128, 0.2);
+  --lg-knob: #ffffff;
+  --lg-liquid-gray: #d6d6db;
+}
+
+.dark,
+[data-theme="dark"] {
+  --lg-frost: rgba(18, 24, 36, 0.38);
+  --lg-frost-strong: rgba(18, 24, 36, 0.58);
+  --lg-edge: rgba(255, 255, 255, 0.26);
+  --lg-glow: rgba(255, 255, 255, 0.07);
+  --lg-press: rgba(255, 255, 255, 0.16);
+  --lg-shadow: rgba(0, 0, 0, 0.25);
+  --lg-sheet-bg: rgba(28, 28, 30, 0.84);
+
+  --lg-label: #ffffff;
+  --lg-label2: rgba(235, 235, 245, 0.6);
+  --lg-separator: rgba(235, 235, 245, 0.16);
+  --lg-bg: #000000;
+  --lg-tint: #0a84ff;
+
+  --lg-segment: #636366;
+  --lg-track: rgba(120, 120, 128, 0.32);
+  --lg-liquid-gray: #46464c;
+}
 
 /* ---------- refractive glass host (used by <LiquidGlass>) ---------- */
 .liquid-glass {
   position: relative;
-  background: hsl(0 0% 100% / var(--lg-frost, 0.08));
+  background: hsl(0 0% 100% / var(--lg-host-frost, 0.08));
   box-shadow:
-    0 0 2px 1px var(--lg-ring, rgba(255, 255, 255, 0.45)) inset,
-    0 0 10px 4px var(--lg-glow, rgba(255, 255, 255, 0.2)) inset,
-    0px 4px 16px var(--lg-shadow, rgba(17, 17, 26, 0.05)),
-    0px 8px 24px var(--lg-shadow, rgba(17, 17, 26, 0.05)),
-    0px 16px 56px var(--lg-shadow, rgba(17, 17, 26, 0.05));
+    0 0 2px 1px rgba(255, 255, 255, 0.45) inset,
+    0 0 10px 4px rgba(255, 255, 255, 0.2) inset,
+    0px 4px 16px var(--lg-shadow),
+    0px 8px 24px var(--lg-shadow),
+    0px 16px 56px var(--lg-shadow);
 }
 
 .dark .liquid-glass,
 [data-theme="dark"] .liquid-glass {
-  background: hsl(0 0% 8% / calc(var(--lg-frost, 0.08) + 0.3));
+  background: hsl(0 0% 8% / calc(var(--lg-host-frost, 0.08) + 0.3));
   box-shadow:
-    0 0 2px 1px var(--lg-ring, rgba(255, 255, 255, 0.25)) inset,
-    0 0 10px 4px var(--lg-glow, rgba(255, 255, 255, 0.08)) inset,
-    0px 4px 16px var(--lg-shadow, rgba(0, 0, 0, 0.25)),
-    0px 8px 24px var(--lg-shadow, rgba(0, 0, 0, 0.25)),
-    0px 16px 56px var(--lg-shadow, rgba(0, 0, 0, 0.2));
+    0 0 2px 1px rgba(255, 255, 255, 0.25) inset,
+    0 0 10px 4px rgba(255, 255, 255, 0.08) inset,
+    0px 4px 16px var(--lg-shadow),
+    0px 8px 24px var(--lg-shadow),
+    0px 16px 56px var(--lg-shadow);
 }
 
 /* The inline SVG holding the displacement filter — rendered but invisible. */
@@ -46,42 +88,326 @@
   pointer-events: none;
 }
 
-/* ---------- lightweight glass for small/repeated elements ----------
-   (list rows, chips, buttons) — frosted blur only, no per-element
-   SVG filter cost. */
+/* ---------- glass materials ---------- */
+
+/* Buttons / chips floating over app surfaces. */
+.glass {
+  background: var(--lg-frost);
+  -webkit-backdrop-filter: blur(12px) saturate(1.7);
+  backdrop-filter: blur(12px) saturate(1.7);
+  box-shadow:
+    inset 0 0 2px 1px var(--lg-edge),
+    inset 0 0 10px 4px var(--lg-glow),
+    0 4px 16px var(--lg-shadow),
+    0 8px 24px var(--lg-shadow);
+}
+.glass:active {
+  background: var(--lg-press);
+}
+
+/* Chrome floating over imagery / dark stages — always dark. */
+.glass-media {
+  background: rgba(22, 24, 32, 0.36);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6) brightness(1.08);
+  backdrop-filter: blur(14px) saturate(1.6) brightness(1.08);
+  box-shadow:
+    inset 0 0 2px 1px rgba(255, 255, 255, 0.22),
+    inset 0 0 10px 4px rgba(255, 255, 255, 0.05),
+    0 4px 16px rgba(0, 0, 0, 0.18);
+}
+.glass-media:active {
+  background: rgba(60, 64, 76, 0.45);
+}
+
+/* Hero surfaces (tab bars, action sheets) — the full Jhey stack. */
+.glass-panel {
+  background: var(--lg-frost-strong);
+  -webkit-backdrop-filter: blur(16px) saturate(1.8);
+  backdrop-filter: blur(16px) saturate(1.8);
+  box-shadow:
+    inset 0 0 2px 1px var(--lg-edge),
+    inset 0 0 10px 4px var(--lg-glow),
+    0 4px 16px var(--lg-shadow),
+    0 8px 24px var(--lg-shadow),
+    0 16px 56px var(--lg-shadow),
+    inset 0 4px 16px rgba(17, 17, 26, 0.04),
+    inset 0 8px 24px rgba(17, 17, 26, 0.04);
+}
+
+/* Bottom content sheets: translucent-elevated (legibility first). */
+.glass-sheet {
+  background: var(--lg-sheet-bg);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 0.5px 0 0 var(--lg-edge);
+}
+
+/* Small / repeated elements (list rows, chips, in-sheet controls). */
 .glass-chip {
-  background: var(--lg-chip-bg, hsl(0 0% 100% / 0.55));
+  background: var(--lg-chip-bg, var(--lg-frost));
   -webkit-backdrop-filter: blur(16px) saturate(1.5);
   backdrop-filter: blur(16px) saturate(1.5);
   box-shadow:
-    0 0 1.5px 1px var(--lg-ring, rgba(255, 255, 255, 0.5)) inset,
-    0 2px 8px var(--lg-shadow, rgba(17, 17, 26, 0.04));
+    inset 0 0 2px 1px var(--lg-edge),
+    inset 0 0 8px 3px var(--lg-glow),
+    0 2px 8px var(--lg-shadow);
+}
+.glass-chip:active {
+  background: var(--lg-press);
 }
 
-.dark .glass-chip,
-[data-theme="dark"] .glass-chip {
-  background: var(--lg-chip-bg, hsl(0 0% 14% / 0.55));
-  box-shadow:
-    0 0 1.5px 1px var(--lg-ring, rgba(255, 255, 255, 0.16)) inset,
-    0 2px 8px var(--lg-shadow, rgba(0, 0, 0, 0.2));
+/* ============================================================
+   Controls (liquid-glass-kit/motion)
+   ============================================================ */
+
+/* ---------- GlassButton ---------- */
+.lg-glass-button {
+  display: inline-flex;
+  height: 40px;
+  width: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: none;
+  padding: 0;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.lg-glass-button:disabled {
+  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.3);
+}
+.lg-glass-button--active {
+  background: rgba(255, 255, 255, 0.28) !important;
 }
 
-/* ---------- stronger frosted glass for sheets/dropdowns/modals ---------- */
-.glass-sheet {
-  background: var(--lg-sheet-bg, hsl(0 0% 100% / 0.6));
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  backdrop-filter: blur(24px) saturate(1.6);
-  box-shadow:
-    0 0 2px 1px var(--lg-ring, rgba(255, 255, 255, 0.5)) inset,
-    0 0 10px 4px var(--lg-glow, rgba(255, 255, 255, 0.18)) inset,
-    0 12px 32px var(--lg-shadow, rgba(17, 17, 26, 0.12));
+/* ---------- Chip ---------- */
+.lg-chip {
+  min-height: 44px;
+  white-space: nowrap;
+  border-radius: 9999px;
+  border: none;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lg-label2);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.lg-chip--active {
+  background: var(--lg-label);
+  color: var(--lg-bg);
 }
 
-.dark .glass-sheet,
-[data-theme="dark"] .glass-sheet {
-  background: var(--lg-sheet-bg, hsl(0 0% 10% / 0.65));
+/* ---------- Segmented ---------- */
+.lg-segmented {
+  display: flex;
+  height: 36px;
+  border-radius: 9px;
+  padding: 2px;
+}
+.lg-segmented__item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 7px;
+  border: none;
+  background: none;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--lg-label2);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.lg-segmented__item--active {
+  color: var(--lg-label);
+}
+.lg-segmented__thumb {
+  position: absolute;
+  inset: 0;
+  border-radius: 7px;
+  background: var(--lg-segment);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.lg-segmented__label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ---------- Stepper ---------- */
+.lg-stepper {
+  display: flex;
+  height: 32px;
+  align-items: stretch;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.lg-stepper__divider {
+  margin: 8px 0;
+  width: 1px;
+  background: var(--lg-separator);
+}
+.lg-stepper__button {
+  display: flex;
+  width: 48px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--lg-label);
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+.lg-stepper__button:active {
+  background: var(--lg-track);
+}
+.lg-stepper__button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   Liquid slider (jh3y qEbYRVg port)
+   Mount <LiquidSliderDefs /> once near the app root.
+   ============================================================ */
+.lg-slider-defs {
+  position: absolute;
+  height: 0;
+  width: 0;
+}
+
+.lg-slider {
+  position: relative;
+  height: 36px;
+  width: 100%;
+}
+.lg-slider--focused {
+  border-radius: 9999px;
+  outline: 2px solid color-mix(in srgb, var(--lg-tint) 60%, transparent);
+  outline-offset: 2px;
+}
+.lg-slider__stage {
+  position: absolute;
+  inset: 0;
+}
+.lg-slider__track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 8px;
+  transform: translateY(-50%);
+  overflow: hidden;
+  border-radius: 9999px;
+}
+.lg-slider__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 9999px;
+}
+.lg-slider__mask {
+  position: absolute;
+  top: 50%;
+  border-radius: 9999px;
+  background: #000;
+}
+.lg-slider__thumb {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+}
+.lg-slider__layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+}
+.lg-slider__liquids {
+  overflow: hidden;
+}
+.lg-slider__input {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  opacity: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  touch-action: none;
+  margin: 0;
+}
+/* Thumb matches the visible capsule width so finger→value mapping
+ * lines up with the capsule's travel. */
+.lg-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 38px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+.lg-slider__input::-moz-range-thumb {
+  width: 38px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Inset glass track + liquid fill. */
+.lg-track {
+  background: var(--lg-track);
   box-shadow:
-    0 0 2px 1px var(--lg-ring, rgba(255, 255, 255, 0.22)) inset,
-    0 0 10px 4px var(--lg-glow, rgba(255, 255, 255, 0.06)) inset,
-    0 12px 32px var(--lg-shadow, rgba(0, 0, 0, 0.35));
+    inset 0 1px 2px rgba(0, 0, 0, 0.14),
+    inset 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.lg-fill {
+  background: var(--lg-tint);
+}
+
+/* Liquid capsule pieces (Jhey's .indicator__liquid internals). */
+.lq-cover {
+  background: var(--lg-knob);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.lq-shell {
+  /* the pen's grabbed-capsule glass shadow stack, verbatim */
+  box-shadow:
+    1px -1px 2px hsl(0 0% 100% / 0.5) inset,
+    0px -1px 2px hsl(0 0% 100% / 0.5) inset,
+    -1px -1px 2px hsl(0 0% 100% / 0.5) inset,
+    1px 1px 2px hsl(0 0% 30% / 0.5) inset,
+    -8px 4px 10px -6px hsl(0 0% 30% / 0.25) inset,
+    -1px 1px 6px hsl(0 0% 30% / 0.25) inset,
+    -1px -1px 8px hsl(0 0% 60% / 0.15),
+    1px 1px 2px hsl(0 0% 30% / 0.15),
+    2px 2px 6px hsl(0 0% 30% / 0.15),
+    -2px -1px 2px hsl(0 0% 100% / 0.25) inset,
+    3px 6px 16px -6px hsl(0 0% 30% / 0.5);
+  z-index: 20;
+}
+.lq-liquid-gray {
+  background: var(--lg-liquid-gray);
+  transform: translateX(13%);
+}
+.lq-liquid-fill {
+  background: var(--lg-tint);
+}
+.lq-glow-gray {
+  box-shadow: inset 0 0 3px 4px var(--lg-liquid-gray);
+}
+.lq-glow-fill {
+  box-shadow: inset 0 0 3px 4px var(--lg-tint);
 }

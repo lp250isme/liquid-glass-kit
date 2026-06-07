@@ -31,8 +31,23 @@ import { LiquidGlass } from 'liquid-glass-kit';
 
 ```jsx
 // Small / repeated elements: use CSS materials, NOT <LiquidGlass>
-<div className="glass-chip rounded-2xl p-4">{listItem}</div>
-<div className="glass-sheet rounded-xl">{dropdown}</div>
+<div className="glass rounded-full">{floatingButton}</div>       // 基本玻璃（含 press 態）
+<div className="glass-media rounded-full">{onDarkStage}</div>    // 深色舞台/圖片上專用
+<div className="glass-panel rounded-2xl">{tabBar}</div>          // 主表面（完整 Jhey 陰影棧）
+<div className="glass-sheet rounded-t-xl">{bottomSheet}</div>    // 底部面板（易讀優先）
+<div className="glass-chip rounded-2xl p-4">{listItem}</div>     // 列表項/小控件
+```
+
+```jsx
+// 互動控件（需要 framer-motion >= 11）
+import { Segmented, Stepper, Slider, LiquidSliderDefs, GlassButton, Chip } from 'liquid-glass-kit/motion';
+
+<LiquidSliderDefs />   {/* Slider 的 SVG 濾鏡，app root 掛一次 */}
+<Segmented options={[{value:'a',label:'A'},{value:'b',label:'B'}]} value={v} onChange={setV} />
+<Slider value={x} min={0} max={100} onChange={setX} />   {/* jh3y 液態膠囊滑塊 */}
+<Stepper onDecrement={dec} onIncrement={inc} />
+<GlassButton onClick={fn}>{icon}</GlassButton>
+<Chip active={on} onClick={toggle}>標籤</Chip>
 ```
 
 ## `<LiquidGlass>` props
@@ -49,18 +64,21 @@ import { LiquidGlass } from 'liquid-glass-kit';
 | `border` | `0.07` | 折射邊緣厚度比例 |
 | `chromatic` | `{r:0,g:6,b:12}` | RGB 各通道位移差（色散強度） |
 
-## Dark mode
+## Theming（design tokens）
 
-由祖先的 `.dark` class（Tailwind 慣例）或 `[data-theme="dark"]` 啟動。要換主題色，覆寫 CSS 變數即可：
+所有材質和控件吃 `--lg-*` design token，kit 內建 iOS 風格的淺/深預設值。深色由祖先 `.dark` class（Tailwind 慣例）或 `[data-theme="dark"]` 啟動；app 在自己的 CSS 重新宣告 token 即可換主題（app 的宣告永遠蓋過 kit 預設，含 `prefers-color-scheme` auto 模式的場景）。
 
-```css
-:root {
-  --lg-ring: rgba(255, 255, 255, 0.6);   /* 高光環 */
-  --lg-chip-bg: hsl(210 40% 98% / 0.5);  /* chip 底色 */
-}
-```
+| Token | 用途 |
+|---|---|
+| `--lg-frost` / `--lg-frost-strong` | 玻璃底色（一般 / 主表面） |
+| `--lg-edge` / `--lg-glow` / `--lg-shadow` | 邊緣高光 / 內光暈 / 投影 |
+| `--lg-press` | 按下狀態底色 |
+| `--lg-sheet-bg` / `--lg-chip-bg` | sheet / chip 底色覆寫 |
+| `--lg-label` / `--lg-label2` / `--lg-separator` / `--lg-bg` | 控件文字/結構色 |
+| `--lg-tint` | 品牌色（slider fill、focus ring） |
+| `--lg-segment` / `--lg-track` / `--lg-knob` / `--lg-liquid-gray` | 控件專用 |
 
-可用變數：`--lg-ring`、`--lg-glow`、`--lg-shadow`、`--lg-chip-bg`、`--lg-sheet-bg`（`--lg-frost` 由元件 prop 控制）。
+`<LiquidGlass>` 的 frost prop 走獨立的 `--lg-host-frost`（元件內聯），不與上表衝突。
 
 ## ⚠️ 使用邊界（重要）
 
@@ -84,9 +102,15 @@ magick /tmp/icons.png -crop 1024x1024+0+0    +repage -resize 512x512 -strip icon
 magick /tmp/icons.png -crop 1024x1024+1024+0 +repage -resize 512x512 -strip icon-dark.png
 ```
 
+## Next.js
+
+- 已內建 `'use client'` banner 與 SSR-safe effect，App Router 直接 import 即用
+- TypeScript 型別已附（`index.d.ts` / `motion.d.ts`）
+
 ## Credits
 
-- 核心折射技術：[Jhey Tompkins (@jh3y)](https://codepen.io/jh3y) — ["liquid glass" pen](https://codepen.io/jh3y/pen/EajLxJV)（MIT）
+- 核心折射技術：[Jhey Tompkins (@jh3y)](https://codepen.io/jh3y) — ["liquid glass"](https://codepen.io/jh3y/pen/EajLxJV)（MIT）
+- 液態滑塊：jh3y — ["cross browser liquid slider"](https://codepen.io/jh3y/pen/qEbYRVg)（MIT）
 
 ## License
 

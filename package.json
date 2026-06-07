@@ -1,14 +1,21 @@
 {
   "name": "liquid-glass-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Apple Liquid Glass UI materials for React — refractive LiquidGlass component (jh3y's SVG displacement technique) with frosted-glass CSS fallbacks",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./motion": {
+      "types": "./dist/motion.d.ts",
+      "import": "./dist/motion.js",
+      "require": "./dist/motion.cjs"
     },
     "./styles.css": "./dist/styles.css"
   },
@@ -17,11 +24,17 @@
     "recipes"
   ],
   "scripts": {
-    "build": "esbuild src/index.js --bundle --external:react --format=esm --outfile=dist/index.js && esbuild src/index.js --bundle --external:react --format=cjs --outfile=dist/index.cjs && cp src/styles.css dist/styles.css",
+    "build": "esbuild src/index.js src/motion.jsx --bundle --external:react --external:framer-motion --format=esm --outdir=dist --out-extension:.js=.js --banner:js=\"'use client';\" && esbuild src/index.js src/motion.jsx --bundle --external:react --external:framer-motion --format=cjs --outdir=dist --out-extension:.js=.cjs --banner:js=\"'use client';\" && cp src/styles.css dist/styles.css && cp src/index.d.ts src/motion.d.ts dist/",
     "prepare": "npm run build"
   },
   "peerDependencies": {
-    "react": ">=18"
+    "react": ">=18",
+    "framer-motion": ">=11"
+  },
+  "peerDependenciesMeta": {
+    "framer-motion": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "esbuild": "^0.24.0"

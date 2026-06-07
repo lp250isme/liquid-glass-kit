@@ -1,4 +1,7 @@
-import React, { useId, useLayoutEffect, useRef, useState, forwardRef } from 'react';
+import React, { useId, useLayoutEffect, useEffect, useRef, useState, forwardRef } from 'react';
+
+// SSR-safe: useLayoutEffect warns during server rendering (Next.js).
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 /**
  * Liquid Glass material — port of jh3y's "liquid glass" technique
@@ -80,7 +83,7 @@ const LiquidGlass = forwardRef(function LiquidGlass({
         else if (forwardedRef) forwardedRef.current = el;
     };
 
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         if (!supportsSVGBackdrop || !innerRef.current) return;
         const ro = new ResizeObserver(([entry]) => {
             const box = entry.borderBoxSize?.[0];
@@ -110,7 +113,7 @@ const LiquidGlass = forwardRef(function LiquidGlass({
             style={{
                 ...style,
                 borderRadius: radius === 'full' ? 9999 : radius,
-                '--lg-frost': frost,
+                '--lg-host-frost': frost,
                 WebkitBackdropFilter: backdrop,
                 backdropFilter: backdrop,
             }}
