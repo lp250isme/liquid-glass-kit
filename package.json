@@ -1,0 +1,44 @@
+{
+  "name": "liquid-glass-kit",
+  "version": "0.1.0",
+  "description": "Apple Liquid Glass UI materials for React — refractive LiquidGlass component (jh3y's SVG displacement technique) with frosted-glass CSS fallbacks",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "recipes"
+  ],
+  "scripts": {
+    "build": "esbuild src/index.js --bundle --external:react --format=esm --outfile=dist/index.js && esbuild src/index.js --bundle --external:react --format=cjs --outfile=dist/index.cjs && cp src/styles.css dist/styles.css",
+    "prepare": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  },
+  "keywords": [
+    "liquid-glass",
+    "glassmorphism",
+    "react",
+    "backdrop-filter",
+    "svg-displacement",
+    "apple",
+    "ui"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lp250isme/liquid-glass-kit.git"
+  },
+  "author": "kv",
+  "license": "MIT"
+}

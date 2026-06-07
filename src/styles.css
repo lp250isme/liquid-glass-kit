@@ -1,0 +1,87 @@
+/* ============================================================
+   liquid-glass-kit materials
+   Technique: jh3y's liquid glass (codepen.io/jh3y/pen/EajLxJV)
+
+   Dark mode: activated by a `.dark` ancestor class (Tailwind
+   convention) or `[data-theme="dark"]` ancestor.
+
+   Theming hooks (override on :root or any container):
+     --lg-frost        frost opacity for .liquid-glass (set by component prop)
+     --lg-ring         inset highlight ring color
+     --lg-glow         inner glow color
+     --lg-shadow       drop shadow color
+     --lg-chip-bg      .glass-chip background
+     --lg-sheet-bg     .glass-sheet background
+   ============================================================ */
+
+/* ---------- refractive glass host (used by <LiquidGlass>) ---------- */
+.liquid-glass {
+  position: relative;
+  background: hsl(0 0% 100% / var(--lg-frost, 0.08));
+  box-shadow:
+    0 0 2px 1px var(--lg-ring, rgba(255, 255, 255, 0.45)) inset,
+    0 0 10px 4px var(--lg-glow, rgba(255, 255, 255, 0.2)) inset,
+    0px 4px 16px var(--lg-shadow, rgba(17, 17, 26, 0.05)),
+    0px 8px 24px var(--lg-shadow, rgba(17, 17, 26, 0.05)),
+    0px 16px 56px var(--lg-shadow, rgba(17, 17, 26, 0.05));
+}
+
+.dark .liquid-glass,
+[data-theme="dark"] .liquid-glass {
+  background: hsl(0 0% 8% / calc(var(--lg-frost, 0.08) + 0.3));
+  box-shadow:
+    0 0 2px 1px var(--lg-ring, rgba(255, 255, 255, 0.25)) inset,
+    0 0 10px 4px var(--lg-glow, rgba(255, 255, 255, 0.08)) inset,
+    0px 4px 16px var(--lg-shadow, rgba(0, 0, 0, 0.25)),
+    0px 8px 24px var(--lg-shadow, rgba(0, 0, 0, 0.25)),
+    0px 16px 56px var(--lg-shadow, rgba(0, 0, 0, 0.2));
+}
+
+/* The inline SVG holding the displacement filter — rendered but invisible. */
+.liquid-glass__filter {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ---------- lightweight glass for small/repeated elements ----------
+   (list rows, chips, buttons) — frosted blur only, no per-element
+   SVG filter cost. */
+.glass-chip {
+  background: var(--lg-chip-bg, hsl(0 0% 100% / 0.55));
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+  box-shadow:
+    0 0 1.5px 1px var(--lg-ring, rgba(255, 255, 255, 0.5)) inset,
+    0 2px 8px var(--lg-shadow, rgba(17, 17, 26, 0.04));
+}
+
+.dark .glass-chip,
+[data-theme="dark"] .glass-chip {
+  background: var(--lg-chip-bg, hsl(0 0% 14% / 0.55));
+  box-shadow:
+    0 0 1.5px 1px var(--lg-ring, rgba(255, 255, 255, 0.16)) inset,
+    0 2px 8px var(--lg-shadow, rgba(0, 0, 0, 0.2));
+}
+
+/* ---------- stronger frosted glass for sheets/dropdowns/modals ---------- */
+.glass-sheet {
+  background: var(--lg-sheet-bg, hsl(0 0% 100% / 0.6));
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+  box-shadow:
+    0 0 2px 1px var(--lg-ring, rgba(255, 255, 255, 0.5)) inset,
+    0 0 10px 4px var(--lg-glow, rgba(255, 255, 255, 0.18)) inset,
+    0 12px 32px var(--lg-shadow, rgba(17, 17, 26, 0.12));
+}
+
+.dark .glass-sheet,
+[data-theme="dark"] .glass-sheet {
+  background: var(--lg-sheet-bg, hsl(0 0% 10% / 0.65));
+  box-shadow:
+    0 0 2px 1px var(--lg-ring, rgba(255, 255, 255, 0.22)) inset,
+    0 0 10px 4px var(--lg-glow, rgba(255, 255, 255, 0.06)) inset,
+    0 12px 32px var(--lg-shadow, rgba(0, 0, 0, 0.35));
+}
