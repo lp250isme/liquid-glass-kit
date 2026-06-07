@@ -25,3 +25,15 @@ export interface LiquidGlassProps extends React.HTMLAttributes<HTMLElement> {
 export const LiquidGlass: React.ForwardRefExoticComponent<
   LiquidGlassProps & React.RefAttributes<HTMLElement>
 >;
+
+export interface LiquidToggleProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
+  label?: string;
+  className?: string;
+}
+
+/** Liquid glass switch (jh3y bNVWoBW port, iOS proportions). */
+export function LiquidToggle(props: LiquidToggleProps): React.JSX.Element;
