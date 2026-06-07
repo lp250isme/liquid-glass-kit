@@ -64,6 +64,28 @@ import { Segmented, Stepper, Slider, LiquidSliderDefs, GlassButton, Chip } from 
 | `border` | `0.07` | 折射邊緣厚度比例 |
 | `chromatic` | `{r:0,g:6,b:12}` | RGB 各通道位移差（色散強度） |
 
+## Cross-promo（`liquid-glass-kit/works`）
+
+「kv 的其他作品」卡片清單。註冊表集中在 `src/works.json`——**新增/修改作品只改這一個檔案**，所有 app 重新安裝部署後自動跟上。
+
+```jsx
+import { MoreByKv } from 'liquid-glass-kit/works';
+
+// 每個 app 把自己排除掉即可（exclude 為陣列，可排除多個）
+<MoreByKv exclude={['gtc']} lang={lang} theme={isDark ? 'dark' : 'light'} />
+```
+
+| prop | default | 說明 |
+|---|---|---|
+| `exclude` | `[]` | 不顯示的作品 id 陣列（通常傳自己的 id） |
+| `lang` | `'en'` | 標題/描述語言（fallback `en`） |
+| `theme` | `'light'` | `'dark'` 時取 `iconDark` |
+| `heading` | 依 lang | 覆寫區塊標題 |
+| `cardClassName` | `'glass-chip'` | 卡片玻璃材質 class |
+
+無 build 的靜態頁可直接 fetch 同一份註冊表：
+`https://cdn.jsdelivr.net/gh/lp250isme/liquid-glass-kit@main/src/works.json`
+
 ## Theming（design tokens）
 
 所有材質和控件吃 `--lg-*` design token，kit 內建 iOS 風格的淺/深預設值。深色由祖先 `.dark` class（Tailwind 慣例）或 `[data-theme="dark"]` 啟動；app 在自己的 CSS 重新宣告 token 即可換主題（app 的宣告永遠蓋過 kit 預設，含 `prefers-color-scheme` auto 模式的場景）。
