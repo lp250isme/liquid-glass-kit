@@ -39,8 +39,8 @@
 [data-theme="dark"] {
   --lg-frost: rgba(18, 24, 36, 0.38);
   --lg-frost-strong: rgba(18, 24, 36, 0.58);
-  --lg-edge: rgba(255, 255, 255, 0.26);
-  --lg-glow: rgba(255, 255, 255, 0.07);
+  --lg-edge: rgba(255, 255, 255, 0.12);
+  --lg-glow: rgba(255, 255, 255, 0.05);
   --lg-press: rgba(255, 255, 255, 0.16);
   --lg-shadow: rgba(0, 0, 0, 0.25);
   --lg-sheet-bg: rgba(28, 28, 30, 0.84);
