@@ -67,6 +67,8 @@ const LiquidGlass = forwardRef(function LiquidGlass({
     displace = 0.4,       // output blur (softens the refraction)
     border = 0.07,        // refractive edge thickness ratio
     chromatic = { r: 0, g: 6, b: 12 }, // per-channel scale offsets
+    tracking = false,     // specular sheen follows the cursor (hover-capable devices only)
+    elastic = false,      // liquid wobble toward cursor; true = 0.14, or 0..1 strength
     className = '',
     style,
     children,
@@ -76,6 +78,73 @@ const LiquidGlass = forwardRef(function LiquidGlass({
     const filterId = `lg-${rawId.replace(/[^a-zA-Z0-9-]/g, '')}`;
     const innerRef = useRef(null);
     const [size, setSize] = useState({ w: 0, h: 0 });
+    const elasticK = elastic === true ? 0.14 : Math.max(0, +elastic || 0);
+
+    // Pointer FX (tracking sheen / elastic wobble) — desktop pointers only.
+    // No React state here: pointermove writes CSS vars + `translate`/`scale`
+    // (the *independent* transform properties, so an app's `transform:
+    // translateX(-50%)` positioning is never clobbered) straight on the node.
+    useEffect(() => {
+        const el = innerRef.current;
+        if (!el || (!tracking && !elasticK)) return;
+        if (typeof window === 'undefined' || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+        const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+        let rect = null;
+        let raf = 0;
+        let ex = 0, ey = 0; // last pointer pos (client coords)
+
+        const apply = () => {
+            raf = 0;
+            if (!rect) return;
+            const x = ex - rect.left, y = ey - rect.top;
+            if (tracking) {
+                el.style.setProperty('--lg-mx', x + 'px');
+                el.style.setProperty('--lg-my', y + 'px');
+            }
+            if (elasticK && !reduced.matches) {
+                const nx = Math.max(-1, Math.min(1, (x - rect.width / 2) / (rect.width / 2)));
+                const ny = Math.max(-1, Math.min(1, (y - rect.height / 2) / (rect.height / 2)));
+                const shift = 40 * elasticK; // 0.14 → ~5.6px max
+                el.style.translate = `${(nx * shift).toFixed(1)}px ${(ny * shift * 0.6).toFixed(1)}px`;
+            }
+        };
+        const onEnter = (e) => {
+            rect = el.getBoundingClientRect();
+            el.style.setProperty('--lg-sheen-size', Math.max(rect.width, rect.height) * 0.9 + 'px');
+            if (elasticK) el.dataset.lgElastic = 'follow';
+            ex = e.clientX; ey = e.clientY;
+            if (!raf) raf = requestAnimationFrame(apply);
+        };
+        const onMove = (e) => {
+            ex = e.clientX; ey = e.clientY;
+            if (!raf) raf = requestAnimationFrame(apply);
+        };
+        const onLeave = () => {
+            if (raf) { cancelAnimationFrame(raf); raf = 0; }
+            if (elasticK) {
+                el.dataset.lgElastic = 'rest'; // bouncy spring-back transition
+                el.style.translate = '0px 0px';
+                el.style.scale = '1';
+            }
+        };
+        const onDown = () => { if (elasticK && !reduced.matches) el.style.scale = String(1 - 0.25 * elasticK); };
+        const onUp = () => { if (elasticK) el.style.scale = '1'; };
+        el.addEventListener('pointerenter', onEnter);
+        el.addEventListener('pointermove', onMove);
+        el.addEventListener('pointerleave', onLeave);
+        el.addEventListener('pointerdown', onDown);
+        el.addEventListener('pointerup', onUp);
+        return () => {
+            if (raf) cancelAnimationFrame(raf);
+            el.removeEventListener('pointerenter', onEnter);
+            el.removeEventListener('pointermove', onMove);
+            el.removeEventListener('pointerleave', onLeave);
+            el.removeEventListener('pointerdown', onDown);
+            el.removeEventListener('pointerup', onUp);
+            el.style.translate = ''; el.style.scale = '';
+            delete el.dataset.lgElastic;
+        };
+    }, [tracking, elasticK]);
 
     const setRefs = (el) => {
         innerRef.current = el;
@@ -138,6 +207,7 @@ const LiquidGlass = forwardRef(function LiquidGlass({
                 </svg>
             )}
             {children}
+            {tracking && <span className="liquid-glass__sheen" aria-hidden="true" />}
         </Tag>
     );
 });

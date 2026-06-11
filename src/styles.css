@@ -88,6 +88,43 @@
   pointer-events: none;
 }
 
+/* Cursor-following specular sheen (rendered when `tracking` is on).
+   Position comes from --lg-mx/--lg-my set by the component on pointermove. */
+.liquid-glass__sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    var(--lg-sheen-size, 160px) circle at var(--lg-mx, 50%) var(--lg-my, 50%),
+    var(--lg-sheen, rgba(255, 255, 255, 0.14)),
+    transparent 62%
+  );
+}
+.liquid-glass:hover > .liquid-glass__sheen {
+  opacity: 1;
+}
+.dark .liquid-glass > .liquid-glass__sheen,
+[data-theme="dark"] .liquid-glass > .liquid-glass__sheen {
+  --lg-sheen: rgba(255, 255, 255, 0.09);
+}
+
+/* Elastic wobble (when `elastic` is on): fast follow while hovering,
+   springy overshoot back to rest on leave. Uses the independent
+   `translate`/`scale` properties so app `transform` positioning survives. */
+.liquid-glass[data-lg-elastic] {
+  transition: translate 0.16s ease-out, scale 0.2s ease-out;
+}
+.liquid-glass[data-lg-elastic="rest"] {
+  transition: translate 0.55s cubic-bezier(0.3, 1.8, 0.4, 1), scale 0.45s cubic-bezier(0.3, 1.8, 0.4, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass__sheen { transition: none; }
+  .liquid-glass[data-lg-elastic] { transition: none; translate: 0 0; scale: 1; }
+}
+
 /* ---------- glass materials ---------- */
 
 /* Buttons / chips floating over app surfaces. */

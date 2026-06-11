@@ -1,6 +1,6 @@
 {
   "name": "liquid-glass-kit",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Apple Liquid Glass UI materials for React — refractive LiquidGlass component (jh3y's SVG displacement technique) with frosted-glass CSS fallbacks",
   "type": "module",
   "main": "./dist/index.cjs",

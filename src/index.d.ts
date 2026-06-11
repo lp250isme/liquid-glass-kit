@@ -19,6 +19,10 @@ export interface LiquidGlassProps extends React.HTMLAttributes<HTMLElement> {
   border?: number;
   /** Per-channel displacement offsets (chromatic aberration). */
   chromatic?: { r: number; g: number; b: number };
+  /** Specular sheen follows the cursor. Hover-capable (desktop) pointers only. Default: false. */
+  tracking?: boolean;
+  /** Liquid wobble toward the cursor with springy return. `true` = 0.14, or pass 0–1 strength. Skipped under prefers-reduced-motion. Default: false. */
+  elastic?: boolean | number;
   children?: React.ReactNode;
 }
 

@@ -63,6 +63,8 @@ import { Segmented, Stepper, Slider, LiquidSliderDefs, GlassButton, Chip } from 
 | `displace` | `0.4` | 輸出模糊（柔化折射邊緣） |
 | `border` | `0.07` | 折射邊緣厚度比例 |
 | `chromatic` | `{r:0,g:6,b:12}` | RGB 各通道位移差（色散強度） |
+| `tracking` | `false` | specular 高光跟著游標走（僅 hover 裝置；亮度可用 `--lg-sheen` 調） |
+| `elastic` | `false` | 液態回彈：玻璃朝游標微位移、離開時 spring 回彈。`true`＝0.14，或傳 0–1 強度；`prefers-reduced-motion` 自動停用。用獨立的 `translate`/`scale` 屬性實作，不會打掉 app 的 `transform` 定位 |
 
 ## Cross-promo
 
