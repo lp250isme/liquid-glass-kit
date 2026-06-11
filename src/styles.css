@@ -57,12 +57,15 @@
 }
 
 /* ---------- refractive glass host (used by <LiquidGlass>) ---------- */
+/* Host edge highlight is tokenized (--lg-host-edge/--lg-host-glow) so apps can
+   tune it; dark defaults softened to match the .glass-panel pass (was .25/.08 —
+   read as a bright rim on dark themes). */
 .liquid-glass {
   position: relative;
   background: hsl(0 0% 100% / var(--lg-host-frost, 0.08));
   box-shadow:
-    0 0 2px 1px rgba(255, 255, 255, 0.45) inset,
-    0 0 10px 4px rgba(255, 255, 255, 0.2) inset,
+    0 0 2px 1px var(--lg-host-edge, rgba(255, 255, 255, 0.45)) inset,
+    0 0 10px 4px var(--lg-host-glow, rgba(255, 255, 255, 0.2)) inset,
     0px 4px 16px var(--lg-shadow),
     0px 8px 24px var(--lg-shadow),
     0px 16px 56px var(--lg-shadow);
@@ -71,12 +74,8 @@
 .dark .liquid-glass,
 [data-theme="dark"] .liquid-glass {
   background: hsl(0 0% 8% / calc(var(--lg-host-frost, 0.08) + 0.3));
-  box-shadow:
-    0 0 2px 1px rgba(255, 255, 255, 0.25) inset,
-    0 0 10px 4px rgba(255, 255, 255, 0.08) inset,
-    0px 4px 16px var(--lg-shadow),
-    0px 8px 24px var(--lg-shadow),
-    0px 16px 56px var(--lg-shadow);
+  --lg-host-edge: rgba(255, 255, 255, 0.12);
+  --lg-host-glow: rgba(255, 255, 255, 0.05);
 }
 
 /* The inline SVG holding the displacement filter — rendered but invisible. */
